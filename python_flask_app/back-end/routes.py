@@ -29,3 +29,16 @@ def incluir_sapato():
                           "detalhes": str(e)})
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
+
+@app.route("/excluir_sapato/<int:sapato_id>", methods=["DELETE"])
+def excluir_sapato(sapato_id):
+    resposta = jsonify({"status": "passou",
+                      "detalhes": "nenhum detalhe"})
+    try:
+        Sapato.query.filter(Sapato.id==sapato_id).delete()
+        db.session.commit()
+    except Exception as e:
+        resposta = jsonify({"status": "erro",
+                          "detalhes": str(e)})
+    resposta.headers.add("Access-Control-Allow-Origin", "*")
+    return resposta

@@ -13,12 +13,17 @@ $( document ).ready(function() {
     function listarSapatos(sapatos) {
       $("#listar_sapatos tr>td").remove();
       for (var i in sapatos) {
-        line = "<tr>" +
-          "<td>" + sapatos[i].id + "</td>" +
-          "<td>" + sapatos[i].modelo + "</td>" +
-          "<td>" + sapatos[i].tamanho + "</td>" +
-          "<td>" + sapatos[i].cor + "</td>" +
-          "</tr>";
+        line = `<tr id="linha_${sapatos[i].id}">
+          <td>${sapatos[i].id}</td>
+          <td>${sapatos[i].modelo}</td>
+          <td>${sapatos[i].tamanho}</td>
+          <td>${sapatos[i].cor}</td>
+          <td>
+            <a href="#" id="${sapatos[i].id}" class="excluir_sapato">
+              <p class="badge badge-danger">Excluir</p>
+            </a>
+          </td>
+          </tr>`;
         $("#tabela_sapatos").append(line);
       };
       $("#mensagem_principal").addClass("invisible");
@@ -56,5 +61,29 @@ $( document ).ready(function() {
     function erroIncluir(resposta) {
       alert("Erro no backend");
     };
+  });
+
+  $(document).on("click", ".excluir_sapato", function() {
+    var idSapato = $(this).attr("id");
+
+    $.ajax({
+      url: `http://localhost:5000/excluir_sapato/${idSapato}`,
+      type: "DELETE",
+      dataType: 'json',
+      success: excluirSapato,
+      error: erroExclusao
+    });
+
+    function excluirSapato(retorno) {
+      if (retorno.status === "passou") {
+        $(`#linha_${idSapato}`).fadeOut();
+      } else {
+        alert(`ERRO: ${retorno.status}: ${retorno.detalhes}`);
+      }
+    }
+
+    function erroExclusao(retorno) {
+      alert("Erro na rota");
+    }
   });
 });
